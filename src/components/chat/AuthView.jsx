@@ -1,13 +1,24 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, User, ShieldCheck, ArrowRight, Loader2, Info } from 'lucide-react';
+import { Lock, User, ShieldCheck, ArrowRight, Loader2, Info, Mail, RefreshCw } from 'lucide-react';
 import axios from 'axios';
 
 const AuthView = ({ onAuthSuccess }) => {
   const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [formData, setFormData] = useState({ 
+    username: '', 
+    email: '', 
+    password: '' 
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Real-time validation states
+  const isUsernameValid = formData.username.length >= 3;
+  const isEmailValid = isLogin || (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email));
+  const isPasswordValid = formData.password.length >= 6;
+  
+  const isFormValid = isUsernameValid && isPasswordValid && (isLogin || isEmailValid);
 
   const handleToggle = () => {
     setIsLogin(!isLogin);
@@ -16,12 +27,18 @@ const AuthView = ({ onAuthSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isFormValid) return;
+
     setLoading(true);
     setError('');
 
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const response = await axios.post(`http://localhost:5000${endpoint}`, formData);
+      const payload = isLogin 
+        ? { username: formData.username, password: formData.password }
+        : formData;
+
+      const response = await axios.post(`http://localhost:5000${endpoint}`, payload);
       
       // Store token
       localStorage.setItem('ld_token', response.data.token);
@@ -53,7 +70,7 @@ const AuthView = ({ onAuthSuccess }) => {
               {isLogin ? 'SECURE' : 'JOIN'} <span className="gradient-text">{isLogin ? 'LOGIN' : 'HUB'}</span>
             </h2>
             <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.3em] mt-2">
-              Level: Unauthorized
+              Level: {isLogin ? 'Classified' : 'Unauthorized'}
             </p>
           </div>
           <ShieldCheck className="text-primary/40" size={32} />
@@ -62,27 +79,60 @@ const AuthView = ({ onAuthSuccess }) => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div className="relative group">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-primary transition-colors" size={18} />
+              <User className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${formData.username && !isUsernameValid ? 'text-red-400' : 'text-zinc-500 group-focus-within:text-primary'}`} size={18} />
               <input
                 type="text"
                 placeholder="USERNAME"
                 required
-                className="w-full bg-white/5 border border-white/5 rounded-xl py-4 pl-12 pr-4 text-sm font-mono tracking-widest outline-none focus:border-primary/50 focus:bg-primary/5 transition-all"
+                className={`w-full bg-white/5 border rounded-xl py-4 pl-12 pr-4 text-sm font-mono tracking-widest outline-none transition-all ${
+                  formData.username && !isUsernameValid ? 'border-red-400/50 bg-red-400/5' : 'border-white/5 focus:border-primary/50 focus:bg-primary/5'
+                }`}
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               />
+              {formData.username && !isUsernameValid && (
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-red-400 font-bold uppercase tracking-tighter">Min 3 Chars</span>
+              )}
             </div>
 
+            <AnimatePresence>
+              {!isLogin && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="relative group overflow-hidden"
+                >
+                  <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${formData.email && !isEmailValid ? 'text-red-400' : 'text-zinc-500 group-focus-within:text-primary'}`} size={18} />
+                  <input
+                    type="email"
+                    placeholder="EMAIL ADDRESS"
+                    required={!isLogin}
+                    className={`w-full bg-white/5 border rounded-xl py-4 pl-12 pr-4 text-sm font-mono tracking-widest outline-none transition-all ${
+                      formData.email && !isEmailValid ? 'border-red-400/50 bg-red-400/5' : 'border-white/5 focus:border-primary/50 focus:bg-primary/5'
+                    }`}
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <div className="relative group">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-primary transition-colors" size={18} />
+              <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${formData.password && !isPasswordValid ? 'text-red-400' : 'text-zinc-500 group-focus-within:text-primary'}`} size={18} />
               <input
                 type="password"
                 placeholder="PASSWORD"
                 required
-                className="w-full bg-white/5 border border-white/5 rounded-xl py-4 pl-12 pr-4 text-sm font-mono tracking-widest outline-none focus:border-primary/50 focus:bg-primary/5 transition-all"
+                className={`w-full bg-white/5 border rounded-xl py-4 pl-12 pr-4 text-sm font-mono tracking-widest outline-none transition-all ${
+                  formData.password && !isPasswordValid ? 'border-red-400/50 bg-red-400/5' : 'border-white/5 focus:border-primary/50 focus:bg-primary/5'
+                }`}
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
+              {formData.password && !isPasswordValid && (
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-red-400 font-bold uppercase tracking-tighter">Min 6 Chars</span>
+              )}
             </div>
           </div>
 
@@ -102,13 +152,13 @@ const AuthView = ({ onAuthSuccess }) => {
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full py-4 rounded-xl bg-primary text-black font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all shadow-neon disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+            disabled={loading || (!isFormValid)}
+            className="w-full py-4 rounded-xl bg-primary text-black font-black uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all shadow-neon disabled:opacity-20 disabled:grayscale disabled:cursor-not-allowed flex items-center justify-center gap-3 overflow-hidden group"
           >
             {loading ? <Loader2 className="animate-spin" size={20} /> : (
               <>
-                {isLogin ? 'AUTHENTICATE' : 'ESTABLISH LINK'}
-                <ArrowRight size={18} />
+                <span className="relative z-10">{isLogin ? 'AUTHENTICATE' : 'ESTABLISH LINK'}</span>
+                <ArrowRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
               </>
             )}
           </button>
