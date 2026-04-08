@@ -1,46 +1,59 @@
 @import "tailwindcss";
 
 @theme {
-  /* LoopDev Custom Cyber Theme */
-  --color-primary: #00f2ff;
-  --color-secondary: #7000ff;
-  --color-accent: #ff007a;
-  --color-bg-main: #0a0a0c;
-  --color-bg-card: rgba(20, 20, 25, 0.7);
-
+  /* LoopDev Hub v2: Obsidian Sanctum Design System */
+  --color-primary: #00f2ff;       /* Neon Sentinel Cyan */
+  --color-primary-dim: #00e2ee;
+  --color-secondary: #e2e2e2;     /* Cool Technical Grey */
+  --color-accent: #6fb5ff;        /* Technical Link Blue */
+  
+  --color-bg-main: #050505;       /* OLED Black */
+  --color-bg-card: rgba(14, 14, 14, 0.4);
+  
   --font-sans: "Inter", "system-ui", "-apple-system", "sans-serif";
   --font-mono: "Fira Code", "monospace";
 
-  --shadow-neon: 0 0 20px rgba(0, 242, 255, 0.15);
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b0b0b0;
+  --color-text-muted: #494847;
+
+  --shadow-neon: 0 0 20px rgba(0, 242, 255, 0.2);
 }
 
 @layer base {
   body {
-    @apply bg-bg-main text-white font-sans antialiased;
+    @apply bg-bg-main text-text-primary font-sans antialiased;
     margin: 0;
-  }
-
-  a {
-    @apply no-underline transition-colors;
   }
 }
 
 @layer components {
   .glass {
-    @apply backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl;
+    @apply backdrop-blur-2xl bg-white/[0.03] border border-white/10 rounded-2xl;
   }
 
   .glass-card {
-    @apply backdrop-blur-lg bg-black/40 border border-white/5 rounded-3xl transition-all duration-300 hover:border-primary/40 hover:-translate-y-1 hover:shadow-neon;
+    @apply backdrop-blur-2xl bg-black/60 border border-white/5 rounded-3xl transition-all duration-500;
+  }
+
+  .glass-card:hover {
+    @apply border-primary/40 -translate-y-1;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-bold;
+    @apply bg-gradient-to-r from-primary via-white to-secondary bg-clip-text text-transparent font-black tracking-tighter;
   }
+}
 
-  .neon-border {
-    @apply border border-primary/20 shadow-[0_0_15px_rgba(0,242,255,0.1)];
-  }
+/* Custom Keyframes */
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
 
 /* Custom Scrollbar (Vanilla CSS still useful here) */

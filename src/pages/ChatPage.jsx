@@ -77,7 +77,7 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="min-h-[80vh] relative flex items-center justify-center overflow-hidden py-20 px-4">
+    <div className="min-h-screen relative flex items-center justify-center overflow-hidden py-32 px-4 md:px-0">
       {/* Cyber Grid Background */}
       <div 
         className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -104,45 +104,42 @@ const ChatPage = () => {
             key="chat"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-6xl glass-card flex flex-col h-[700px] relative overflow-hidden bg-black/80 border-white/10"
+            className="w-full max-w-6xl glass-card flex flex-col h-[75vh] md:h-[700px] relative overflow-hidden bg-black/80 border-white/10"
           >
             {/* Chat Header */}
-            <div className="px-8 py-6 border-b border-white/5 flex justify-between items-center bg-zinc-900/40 backdrop-blur-md">
-              <div className="flex items-center gap-4">
+            <div className="px-6 md:px-8 py-4 md:py-6 border-b border-white/5 flex justify-between items-center bg-zinc-900/40 backdrop-blur-md">
+              <div className="flex items-center gap-3 md:gap-4">
                 <div className="relative">
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
-                    <Shield className="text-primary" size={20} />
+                  <div className="h-8 md:h-10 w-8 md:w-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+                    <Shield className="text-primary" size={18} />
                   </div>
-                  <div className={`absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-black ${isConnected ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`}></div>
+                  <div className={`absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-black ${isConnected ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`}></div>
                 </div>
                 <div>
-                  <h3 className="text-sm font-black tracking-widest text-white uppercase">LoopHub : Sector 7</h3>
+                  <h3 className="text-xs md:text-sm font-black tracking-widest text-white uppercase">Sector 7</h3>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-[9px] font-mono text-primary uppercase tracking-tighter">Identity: {user.username}</span>
-                    <span className="text-[9px] font-mono text-zinc-500">•</span>
-                    <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-tighter">{isConnected ? 'Uplink Stable' : 'Synchronizing...'}</span>
+                    <span className="text-[8px] md:text-[9px] font-mono text-primary uppercase tracking-tighter">ID: {user.username}</span>
                   </div>
                 </div>
               </div>
 
               <button 
                 onClick={handleLogout}
-                className="p-3 rounded-lg glass-hover text-zinc-500 hover:text-red-400 transition-all group"
-                title="Disconnect from Hub"
+                className="p-2 md:p-3 rounded-lg glass-hover text-zinc-500 hover:text-red-400 transition-all group"
               >
-                <LogOut size={18} className="group-hover:rotate-12 transition-transform" />
+                <LogOut size={16} className="group-hover:rotate-12 transition-transform" />
               </button>
             </div>
 
             {/* Message Area */}
             <div 
               ref={scrollRef}
-              className="flex-grow overflow-y-auto px-8 py-10 space-y-6 scrollbar-thin scrollbar-thumb-primary/10"
+              className="flex-grow overflow-y-auto px-4 md:px-8 py-6 md:py-10 space-y-6 scrollbar-thin scrollbar-thumb-primary/10"
             >
               {messages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center opacity-20 pointer-events-none select-none">
-                  <Terminal size={48} className="text-primary mb-4" />
-                  <p className="text-[10px] uppercase tracking-[0.5em] font-mono">No decryption signals found</p>
+                  <Terminal size={40} className="text-primary mb-4" />
+                  <p className="text-[8px] uppercase tracking-[0.5em] font-mono">Signal Null</p>
                 </div>
               ) : (
                 messages.map((msg) => {
@@ -154,24 +151,18 @@ const ChatPage = () => {
                       key={msg.id}
                       className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
                     >
-                      <div className={`max-w-[70%] group ${isMe ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
+                      <div className={`max-w-[85%] md:max-w-[70%] group ${isMe ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
                         <div className={`flex items-center gap-2 mb-1 px-1 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">{msg.sender}</span>
-                          <span className="text-[8px] font-mono text-zinc-600 font-bold">{formatTime(msg.timestamp)}</span>
+                          <span className="text-[8px] font-black text-white/50 uppercase tracking-widest">{msg.sender}</span>
+                          <span className="text-[7px] font-mono text-white/20">{formatTime(msg.timestamp)}</span>
                         </div>
                         
-                        <div className={`relative px-5 py-3 rounded-2xl text-sm leading-relaxed ${
+                        <div className={`relative px-4 md:px-5 py-2.5 md:py-3 rounded-2xl text-[13px] md:text-sm leading-relaxed ${
                           isMe 
-                            ? 'bg-primary text-black font-medium rounded-tr-none' 
-                            : 'bg-white/5 text-zinc-100 border border-white/10 rounded-tl-none'
+                            ? 'bg-primary text-black font-bold rounded-tr-none' 
+                            : 'bg-white/[0.05] text-white border border-white/10 rounded-tl-none shadow-xl'
                         }`}>
                           {msg.text}
-                          {/* Bubble Arrow */}
-                          <div className={`absolute top-0 w-4 h-4 ${
-                            isMe 
-                              ? '-right-1 bg-primary [clip-path:polygon(0%_0%,100%_0%,0%_100%)]' 
-                              : '-left-1 bg-white/5 border-l border-t border-white/10 [clip-path:polygon(0%_0%,100%_0%,100%_100%)]'
-                          }`} />
                         </div>
                       </div>
                     </motion.div>
@@ -181,21 +172,21 @@ const ChatPage = () => {
             </div>
 
             {/* Input Footer */}
-            <div className="p-6 bg-zinc-900/50 backdrop-blur-md border-t border-white/5">
+            <div className="p-4 md:p-6 bg-zinc-900/50 backdrop-blur-md border-t border-white/5">
               <form onSubmit={sendMessage} className="relative">
                 <input
                   type="text"
-                  placeholder="TRANSMIT DATA TO HUB..."
-                  className="w-full bg-black/40 border border-white/5 rounded-2xl py-5 pl-6 pr-20 text-xs font-mono tracking-widest outline-none focus:border-primary/50 transition-all placeholder:text-zinc-700"
+                  placeholder="TRANSMIT DATA..."
+                  className="w-full bg-black/40 border border-white/5 rounded-2xl py-4 md:py-5 pl-5 md:pl-6 pr-16 md:pr-20 text-[11px] md:text-xs font-mono tracking-widest outline-none focus:border-primary/50 transition-all placeholder:text-zinc-700 text-white"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || !isConnected}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-xl bg-primary text-black disabled:bg-zinc-800 disabled:text-zinc-500 transition-all active:scale-95 shadow-neon"
+                  className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 p-2.5 md:p-3 rounded-xl bg-primary text-black disabled:bg-zinc-800 disabled:text-zinc-500 transition-all active:scale-95 shadow-neon"
                 >
-                  <Send size={18} />
+                  <Send size={16} />
                 </button>
               </form>
             </div>
