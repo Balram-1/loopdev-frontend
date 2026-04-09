@@ -20,11 +20,16 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (user) {
-      socketRef.current = io('http://localhost:5000');
+      const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+      socketRef.current = io(SOCKET_URL);
       socketRef.current.on('connect', () => {
         setIsConnected(true);
         socketRef.current.emit('join_chat', user);
       });
+      socketRef.current.on('connect_error', () => {
+        setIsConnected(false);
+      });
+      socketRef.current.on('chat_history', (history) => setMessages(history));
       socketRef.current.on('receive_message', (msg) => setMessages((prev) => [...prev, msg]));
       socketRef.current.on('disconnect', () => setIsConnected(false));
       return () => socketRef.current.disconnect();
@@ -51,6 +56,7 @@ const ChatPage = () => {
   };
 
   const formatTime = (iso) => new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const formatDate = (iso) => new Date(iso).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
 
   if (loading) return null;
 
@@ -83,8 +89,8 @@ const ChatPage = () => {
                 <div>
                   <h3 className="text-sm font-semibold text-white">Chat Room</h3>
                   <div className="flex items-center gap-1.5">
-                    <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-400' : 'bg-red-400'}`}></span>
-                    <span className="text-[11px] text-white/30">{user.username}</span>
+                    <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-400' : 'bg-red-400 animate-pulse'}`}></span>
+                    <span className="text-[11px] text-white/30">{isConnected ? 'Live' : 'System offline - Please wait...'}</span>
                   </div>
                 </div>
               </div>
@@ -105,32 +111,44 @@ const ChatPage = () => {
                 messages.map((msg, i) => {
                   const isMe = msg.senderId === user._id;
                   const showName = i === 0 || messages[i - 1].senderId !== msg.senderId;
+                  const showDateDivider = i === 0 || new Date(messages[i - 1].timestamp).toDateString() !== new Date(msg.timestamp).toDateString();
 
                   return (
-                    <motion.div
-                      key={msg.id}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
-                    >
-                      <div className={`max-w-[75%] ${isMe ? 'items-end' : 'items-start'} flex flex-col`}>
-                        {showName && !isMe && (
-                          <span className="text-[11px] text-white/20 ml-1 mb-1">{msg.sender}</span>
-                        )}
-                        <div className={`px-4 py-2.5 text-sm leading-relaxed ${
-                          isMe
-                            ? 'rounded-2xl rounded-tr-md text-white'
-                            : 'rounded-2xl rounded-tl-md text-white/70'
-                        }`} style={
-                          isMe
-                            ? { background: 'linear-gradient(135deg, #6366f1, #7c3aed)' }
-                            : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }
-                        }>
-                          {msg.text}
+                    <React.Fragment key={msg.id || i}>
+                      {showDateDivider && (
+                        <div className="flex justify-center my-6">
+                          <span className="px-3 py-1 rounded-full bg-white/5 text-[10px] font-medium text-white/20 uppercase tracking-wider">
+                            {formatDate(msg.timestamp)}
+                          </span>
                         </div>
-                        <span className="text-[10px] text-white/15 mt-1 mx-1">{formatTime(msg.timestamp)}</span>
-                      </div>
-                    </motion.div>
+                      )}
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div className={`max-w-[75%] ${isMe ? 'items-end' : 'items-start'} flex flex-col`}>
+                          {showName && !isMe && (
+                            <span className="text-[11px] font-semibold text-indigo-400/80 ml-1 mb-1">{msg.sender}</span>
+                          )}
+                          <div className={`px-4 py-2.5 text-sm leading-relaxed ${
+                            isMe
+                              ? 'rounded-2xl rounded-tr-md text-white shadow-lg shadow-indigo-500/10'
+                              : 'rounded-2xl rounded-tl-md text-white/70 shadow-sm'
+                          }`} style={
+                            isMe
+                              ? { background: 'linear-gradient(135deg, #6366f1, #7c3aed)' }
+                              : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }
+                          }>
+                            {msg.text}
+                          </div>
+                          <span className="text-[10px] text-white/15 mt-1.5 mx-1 flex items-center gap-1">
+                            {formatTime(msg.timestamp)}
+                            {isMe && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                          </span>
+                        </div>
+                      </motion.div>
+                    </React.Fragment>
                   );
                 })
               )}

@@ -55,7 +55,7 @@ const ProjectCard = ({ project }) => {
       </h3>
 
       {/* Description */}
-      <p className="text-sm text-white/30 leading-relaxed flex-grow mb-5">
+      <p className="text-sm text-white/60 md:text-white/30 leading-relaxed flex-grow mb-5 transition-colors duration-300 group-hover:text-white/70">
         {project.description}
       </p>
 
@@ -64,7 +64,7 @@ const ProjectCard = ({ project }) => {
         {project.stack && project.stack.map((tech) => (
           <span
             key={tech}
-            className="text-[11px] text-white/25 font-mono"
+            className="text-[11px] text-white/50 md:text-white/25 font-mono group-hover:text-white/60 transition-colors duration-300"
           >
             {tech}
           </span>

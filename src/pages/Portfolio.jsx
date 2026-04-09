@@ -31,7 +31,7 @@ const Portfolio = () => {
       <About />
 
       {/* Projects */}
-      <section id="projects" className="section-padding max-w-6xl mx-auto">
+      <section id="projects" className="section-padding max-w-6xl mx-auto scroll-mt-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -68,8 +68,12 @@ const Portfolio = () => {
         )}
       </section>
 
-      <Timeline />
-      <Contact />
+      <div id="timeline" className="scroll-mt-24">
+        <Timeline />
+      </div>
+      <div id="contact" className="scroll-mt-24">
+        <Contact />
+      </div>
     </>
   );
 };

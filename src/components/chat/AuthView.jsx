@@ -13,18 +13,28 @@ const AuthView = ({ onAuthSuccess }) => {
     setLoading(true);
     setError('');
 
+    // Determine API Base URL: Use env var, current origin (if on same domain), or fallback to localhost
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
       const payload = isLogin
         ? { username: form.username, password: form.password }
         : form;
 
-      const res = await axios.post(`http://localhost:5000${endpoint}`, payload);
+      console.log(`📡 Attempting auth at: ${API_BASE_URL}${endpoint}`);
+      const res = await axios.post(`${API_BASE_URL}${endpoint}`, payload);
+      
       localStorage.setItem('ld_token', res.data.token);
       localStorage.setItem('ld_user', JSON.stringify(res.data));
       onAuthSuccess(res.data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong.');
+      console.error('❌ AUTH ERROR:', err);
+      if (!err.response) {
+        setError('Connection failed. Please ensure the backend is running and reachable.');
+      } else {
+        setError(err.response.data?.message || 'Authentication failed. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }
@@ -101,7 +111,7 @@ const AuthView = ({ onAuthSuccess }) => {
             className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all duration-300 hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed mt-2"
             style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
           >
-            {loading ? '...' : isLogin ? 'Sign In' : 'Create Account'}
+            {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'}
           </button>
         </form>
 

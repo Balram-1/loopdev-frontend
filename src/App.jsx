@@ -11,10 +11,11 @@ function App() {
   const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
-    const hasSeenIntro = sessionStorage.getItem('ld_intro_seen');
-    if (hasSeenIntro) {
-      setShowIntro(false);
-    }
+    // Temporarily disabled for testing
+    // const hasSeenIntro = sessionStorage.getItem('ld_intro_seen');
+    // if (hasSeenIntro) {
+    //   setShowIntro(false);
+    // }
   }, []);
 
   const handleIntroComplete = () => {
