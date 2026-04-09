@@ -1,113 +1,97 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+
+const lines = [
+  { text: '> initializing portfolio...', delay: 0 },
+  { text: '> loading modules: react, node, express', delay: 600 },
+  { text: '> establishing connection...', delay: 1200 },
+  { text: '> status: online', delay: 1800 },
+  { text: '', delay: 2400 },
+];
 
 const IntroScreen = ({ onComplete }) => {
-  const [phase, setPhase] = useState(0);
+  const [visibleLines, setVisibleLines] = useState(0);
+  const [typedText, setTypedText] = useState('');
+  const helloWorld = 'Hello, World.';
 
+  // Show terminal lines one by one
   useEffect(() => {
-    const timer1 = setTimeout(() => setPhase(1), 1000); // Show "Hello"
-    const timer2 = setTimeout(() => setPhase(2), 2000); // Show "World"
-    const timer3 = setTimeout(() => setPhase(3), 3500); // Glitch/Finish
-    const timer4 = setTimeout(onComplete, 4500);
+    const timers = lines.map((line, i) =>
+      setTimeout(() => setVisibleLines(i + 1), line.delay)
+    );
+    return () => timers.forEach(clearTimeout);
+  }, []);
 
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-      clearTimeout(timer4);
-    };
+  // After terminal lines, type "Hello, World."
+  useEffect(() => {
+    const startTyping = setTimeout(() => {
+      let charIndex = 0;
+      const typeInterval = setInterval(() => {
+        setTypedText(helloWorld.slice(0, charIndex + 1));
+        charIndex++;
+        if (charIndex >= helloWorld.length) {
+          clearInterval(typeInterval);
+          // Wait a beat, then exit
+          setTimeout(onComplete, 800);
+        }
+      }, 80);
+      return () => clearInterval(typeInterval);
+    }, 2800);
+    return () => clearTimeout(startTyping);
   }, [onComplete]);
 
   return (
     <motion.div
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 1.05 }}
-      transition={{ duration: 1, ease: [0.43, 0.13, 0.23, 0.96] }}
-      className="fixed inset-0 z-[100] bg-[#050505] flex items-center justify-center overflow-hidden"
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+      className="fixed inset-0 z-[200] flex items-center justify-center"
+      style={{ background: '#0a0a0f' }}
     >
-      {/* Dynamic Aura Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 blur-[150px] rounded-full animate-pulse"></div>
-        <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-secondary/5 blur-[100px] rounded-full animate-float"></div>
-      </div>
+      <div className="max-w-lg w-full px-6">
+        {/* Terminal window */}
+        <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(15,15,25,0.8)' }}>
+          {/* Title bar */}
+          <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+            <div className="w-3 h-3 rounded-full bg-red-500/60"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-500/60"></div>
+            <div className="w-3 h-3 rounded-full bg-green-500/60"></div>
+            <span className="ml-3 text-[11px] text-white/20 font-mono">balram@portfolio ~ </span>
+          </div>
 
-      <div className="relative text-center">
-        <AnimatePresence mode="wait">
-          {phase < 3 && (
-            <motion.div 
-              key="content"
-              className="flex flex-col items-center gap-6"
-            >
-              <div className="flex gap-4 items-baseline overflow-hidden py-10">
-                <AnimatePresence>
-                  {phase >= 1 && (
-                    <motion.h1
-                      initial={{ y: 100, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ duration: 0.8, ease: "easeOut" }}
-                      className="text-7xl md:text-9xl font-black tracking-tighter text-white uppercase italic"
-                    >
-                      HELLO
-                    </motion.h1>
-                  )}
-                  {phase >= 2 && (
-                    <motion.h1
-                      initial={{ y: 100, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ duration: 0.8, ease: "easeOut" }}
-                      className="text-7xl md:text-9xl font-black tracking-tighter text-primary uppercase italic"
-                    >
-                      WORLD.
-                    </motion.h1>
-                  )}
-                </AnimatePresence>
-              </div>
+          {/* Terminal content */}
+          <div className="p-5 font-mono text-sm leading-7 min-h-[220px]">
+            {lines.slice(0, visibleLines).map((line, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+                className={i === 3 ? 'text-emerald-400' : 'text-white/40'}
+              >
+                {line.text}
+              </motion.div>
+            ))}
 
+            {/* Hello World typing */}
+            {visibleLines >= lines.length && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 2.2 }}
-                className="flex flex-col items-center gap-4"
+                className="mt-4 text-2xl font-bold text-white flex items-baseline"
+                style={{ fontFamily: "'Inter', sans-serif" }}
               >
-                <div className="h-[1px] w-24 bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
-                <p className="text-[10px] uppercase tracking-[0.6em] font-mono text-white/40">
-                  LoopDev Ecosystem Initialized
-                </p>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Access Granted Flash */}
-        {phase === 3 && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="flex flex-col items-center gap-2"
-          >
-            <h2 className="text-2xl font-black tracking-[0.5em] text-white italic">ACCESSING PORTAL</h2>
-            <div className="flex gap-1">
-              {[1, 2, 3].map(i => (
-                <motion.div 
-                  key={i}
-                  animate={{ opacity: [0, 1, 0] }}
-                  transition={{ repeat: Infinity, duration: 1, delay: i * 0.2 }}
-                  className="h-1 w-1 bg-primary rounded-full"
+                {typedText}
+                <motion.span
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ repeat: Infinity, duration: 0.6 }}
+                  className="inline-block w-[3px] h-6 ml-0.5 bg-indigo-400"
                 />
-              ))}
-            </div>
-          </motion.div>
-        )}
+              </motion.div>
+            )}
+          </div>
+        </div>
       </div>
-
-      {/* Finishing Flash */}
-      {phase === 3 && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 0.4, 0] }}
-          className="absolute inset-0 bg-white z-[101]"
-        />
-      )}
     </motion.div>
   );
 };

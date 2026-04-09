@@ -1,118 +1,84 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const timelineData = [
-  {
-    date: 'SEPT 2022',
-    title: 'HTML & CSS',
-    desc: 'I wanted to design websites, so HTML was the next language to go to.',
-    status: 'ROOT'
-  },
-  {
-    date: 'APR 2023',
-    title: 'PYTHON',
-    desc: "Just to figure out this whole coding thing, I started with the language Google told me was the easiest to learn.",
-    status: 'SCRIPT'
-  },
-  {
-    date: 'AUG 2024',
-    title: 'C LANGUAGE',
-    desc: 'Deep diving into memory management and systems logic.',
-    status: 'KERNEL'
-  },
-  {
-    date: 'DEC 2024',
-    title: 'GO LANGUAGE',
-    desc: "Started learning Go language, didn't liked it much, but valued the concurrency concepts.",
-    status: 'ABORT'
-  },
-  {
-    date: 'JAN 2025',
-    title: 'C++',
-    desc: 'Transitioning system knowledge into high-performance OOP.',
-    status: 'HARDENED'
-  },
-  {
-    date: 'SEP 2025',
-    title: 'JAVA',
-    desc: 'Enterprise-grade architecture and robust backend design.',
-    status: 'COMPILED'
-  },
-  {
-    date: 'FEB 2026',
-    title: 'JAVASCRIPT',
-    desc: 'The final link to orchestrating full-stack ecosystem interactions.',
-    status: 'UPLINK'
-  }
+  { year: '2022', title: 'HTML & CSS', desc: 'Where it all started — fell in love with seeing code turn into visual things.' },
+  { year: '2023', title: 'Python', desc: 'First real programming language. Scripts, automation, and a lot of Stack Overflow.' },
+  { year: '2024', title: 'C & Go', desc: 'Went low-level: pointers, memory, concurrency. Understood why things crash.' },
+  { year: '2025', title: 'C++ & Java', desc: 'OOP, data structures, and backend architecture. Started thinking in systems.' },
+  { year: '2026', title: 'JavaScript & React', desc: 'Full-stack: Node, Express, MongoDB, Socket.io. Building real products now.' },
 ];
 
-const TimelineItem = ({ data, index }) => {
-  const isEven = index % 2 === 0;
-
-  return (
-    <div className={`relative flex items-center justify-between mb-24 last:mb-0 w-full`}>
-      {/* Connector Node */}
-      <div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-sm bg-bg-main border-2 border-primary z-10 rotate-45 shadow-neon"></div>
-
-      {/* Content */}
-      <motion.div
-        initial={{ opacity: 0, x: isEven ? -50 : 50 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8, delay: 0.1 }}
-        className={`w-[45%] ${isEven ? 'text-right' : 'text-left ml-auto'}`}
-      >
-        <div className="space-y-3">
-          <span className="font-mono text-[10px] text-primary font-black tracking-[0.3em] uppercase">
-            {data.date} // {data.status}
-          </span>
-          <h3 className="text-2xl md:text-3xl font-black text-white tracking-tighter">
-            {data.title}
-          </h3>
-          <p className="text-text-secondary font-mono text-xs leading-relaxed max-w-sm ml-auto mr-0">
-            {data.desc}
-          </p>
-        </div>
-      </motion.div>
-    </div>
-  );
-};
-
 const Timeline = () => {
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? timelineData : timelineData.slice(0, 3);
+
   return (
-    <section id="timeline" className="py-24 md:py-48 px-6 overflow-hidden">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-32">
-          <h2 className="text-[10px] font-mono font-black text-primary uppercase tracking-[0.5em] mb-4">
-            Transmission Path
-          </h2>
-          <h3 className="text-5xl md:text-7xl font-black text-white tracking-tighter">
-            ALWAYS KEEP <span className="text-primary italic">LEARNING.</span>
-          </h3>
-          <p className="mt-6 text-text-secondary font-medium max-w-2xl mx-auto">
-            One of the things I love most about programming is that there's always something new to learn. 
-            Here's a selection of some of the things I've been learning lately.
-          </p>
-        </div>
+    <section id="timeline" className="section-padding max-w-4xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.6 }}
+      >
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-400 mb-4">Timeline</p>
+        <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-16">
+          How I got here<span className="text-indigo-400">.</span>
+        </h2>
+      </motion.div>
 
-        <div className="relative max-w-5xl mx-auto">
-          {/* Vertical Line */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[1px] bg-white/10 overflow-hidden">
-            <motion.div 
-              initial={{ height: 0 }}
-              whileInView={{ height: '100%' }}
-              viewport={{ once: true }}
-              transition={{ duration: 2, ease: "easeInOut" }}
-              className="w-full bg-gradient-to-b from-primary via-primary/50 to-primary/10"
-            />
-          </div>
+      <div className="relative">
+        {/* Vertical line */}
+        <div className="absolute left-[19px] top-2 bottom-2 w-px bg-gradient-to-b from-indigo-500/40 via-indigo-500/20 to-transparent"></div>
 
-          <div className="relative pt-10">
-            {timelineData.map((item, index) => (
-              <TimelineItem key={index} data={item} index={index} />
+        <div className="space-y-0">
+          <AnimatePresence>
+            {visible.map((item, i) => (
+              <motion.div
+                key={item.year}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="relative pl-14 pb-12 last:pb-0 group"
+              >
+                {/* Node */}
+                <div className="absolute left-3 top-1 flex items-center justify-center">
+                  <div className="w-[10px] h-[10px] rounded-full bg-indigo-500/60 ring-4 ring-indigo-500/10 group-hover:bg-indigo-400 group-hover:ring-indigo-400/20 transition-all duration-300"></div>
+                </div>
+
+                {/* Year */}
+                <span className="text-xs font-mono text-white/25 mb-2 block">{item.year}</span>
+
+                {/* Card */}
+                <div className="glass-card p-5 inline-block max-w-md">
+                  <h3 className="text-base font-semibold text-white mb-1.5">{item.title}</h3>
+                  <p className="text-sm text-white/35 leading-relaxed">{item.desc}</p>
+                </div>
+              </motion.div>
             ))}
-          </div>
+          </AnimatePresence>
         </div>
+
+        {/* Expand button */}
+        {timelineData.length > 3 && (
+          <motion.button
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            onClick={() => setExpanded(!expanded)}
+            className="mt-10 ml-14 text-xs font-medium text-white/30 hover:text-indigo-400 transition-colors duration-300 flex items-center gap-2 group"
+          >
+            <span>{expanded ? 'Show less' : `Show ${timelineData.length - 3} more`}</span>
+            <svg
+              className={`w-3.5 h-3.5 transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}
+              fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </motion.button>
+        )}
       </div>
     </section>
   );

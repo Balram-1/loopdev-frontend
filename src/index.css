@@ -1,72 +1,174 @@
 @import "tailwindcss";
 
 @theme {
-  /* LoopDev Hub v2: Obsidian Sanctum Design System */
-  --color-primary: #00f2ff;       /* Neon Sentinel Cyan */
-  --color-primary-dim: #00e2ee;
-  --color-secondary: #e2e2e2;     /* Cool Technical Grey */
-  --color-accent: #6fb5ff;        /* Technical Link Blue */
-  
-  --color-bg-main: #050505;       /* OLED Black */
-  --color-bg-card: rgba(14, 14, 14, 0.4);
-  
-  --font-sans: "Inter", "system-ui", "-apple-system", "sans-serif";
-  --font-mono: "Fira Code", "monospace";
-
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #b0b0b0;
-  --color-text-muted: #494847;
-
-  --shadow-neon: 0 0 20px rgba(0, 242, 255, 0.2);
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* ── Base ── */
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-bg-main text-text-primary font-sans antialiased;
-    margin: 0;
+    background: #0a0a0f;
+    color: #e2e8f0;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: rgba(99, 102, 241, 0.3);
+    color: #fff;
   }
 }
 
-@layer components {
-  .glass {
-    @apply backdrop-blur-2xl bg-white/[0.03] border border-white/10 rounded-2xl;
-  }
-
-  .glass-card {
-    @apply backdrop-blur-2xl bg-black/60 border border-white/5 rounded-3xl transition-all duration-500;
-  }
-
-  .glass-card:hover {
-    @apply border-primary/40 -translate-y-1;
-    box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
-  }
-
-  .gradient-text {
-    @apply bg-gradient-to-r from-primary via-white to-secondary bg-clip-text text-transparent font-black tracking-tighter;
-  }
-}
-
-/* Custom Keyframes */
-@keyframes float {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-20px) scale(1.05); }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-/* Custom Scrollbar (Vanilla CSS still useful here) */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0a0a0c;
-}
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0a0a0f; }
 ::-webkit-scrollbar-thumb {
-  background: #1e1e24;
-  border-radius: 10px;
+  background: #1e1b4b;
+  border-radius: 999px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #00f2ff;
+::-webkit-scrollbar-thumb:hover { background: #312e81; }
+
+/* ── Animated gradient mesh background ── */
+.mesh-gradient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.mesh-gradient .orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.15;
+}
+.mesh-gradient .orb-1 {
+  width: 600px; height: 600px;
+  background: #6366f1;
+  top: -10%; left: -5%;
+  animation: drift-1 20s ease-in-out infinite alternate;
+}
+.mesh-gradient .orb-2 {
+  width: 500px; height: 500px;
+  background: #06b6d4;
+  top: 40%; right: -8%;
+  animation: drift-2 25s ease-in-out infinite alternate;
+}
+.mesh-gradient .orb-3 {
+  width: 450px; height: 450px;
+  background: #8b5cf6;
+  bottom: -5%; left: 30%;
+  animation: drift-3 22s ease-in-out infinite alternate;
+}
+.mesh-gradient .orb-4 {
+  width: 350px; height: 350px;
+  background: #ec4899;
+  top: 20%; left: 50%;
+  animation: drift-4 28s ease-in-out infinite alternate;
+}
+
+@keyframes drift-1 {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(80px, 60px) scale(1.15); }
+  100% { transform: translate(-40px, 120px) scale(0.95); }
+}
+@keyframes drift-2 {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(-60px, -80px) scale(1.1); }
+  100% { transform: translate(40px, 50px) scale(0.9); }
+}
+@keyframes drift-3 {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(100px, -40px) scale(1.1); }
+  100% { transform: translate(-60px, -80px) scale(1.05); }
+}
+@keyframes drift-4 {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(-80px, 60px) scale(1.2); }
+  100% { transform: translate(60px, -100px) scale(0.85); }
+}
+
+/* ── Dot grid overlay ── */
+.dot-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: radial-gradient(circle, #fff 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ── Glass utility ── */
+.glass {
+  background: rgba(15, 15, 25, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.glass-card {
+  background: rgba(15, 15, 25, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glass-card:hover {
+  border-color: rgba(99, 102, 241, 0.25);
+  background: rgba(20, 20, 35, 0.5);
+  box-shadow: 0 0 40px rgba(99, 102, 241, 0.08);
+}
+
+/* ── Gradient text ── */
+.gradient-text {
+  background: linear-gradient(135deg, #818cf8, #6366f1, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.gradient-text-warm {
+  background: linear-gradient(135deg, #f472b6, #fb923c, #facc15);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Floating particles canvas (sits behind content) ── */
+#particles-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ── Section spacing ── */
+.section-padding {
+  padding: 6rem 1.5rem;
+}
+@media (min-width: 768px) {
+  .section-padding { padding: 8rem 3rem; }
+}
+
+/* ── Cursor glow (subtle radial follow) ── */
+.cursor-glow {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s;
 }

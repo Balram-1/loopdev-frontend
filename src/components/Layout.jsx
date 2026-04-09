@@ -1,21 +1,41 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Navbar from './Navbar';
 
 const Layout = ({ children }) => {
+  const glowRef = useRef(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (glowRef.current) {
+        glowRef.current.style.left = e.clientX + 'px';
+        glowRef.current.style.top = e.clientY + 'px';
+      }
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-bg-main text-text-main flex flex-col">
+    <div className="min-h-screen relative">
+      {/* ── Animated mesh gradient background ── */}
+      <div className="mesh-gradient">
+        <div className="orb orb-1"></div>
+        <div className="orb orb-2"></div>
+        <div className="orb orb-3"></div>
+        <div className="orb orb-4"></div>
+      </div>
+
+      {/* ── Dot grid ── */}
+      <div className="dot-grid"></div>
+
+      {/* ── Cursor glow ── */}
+      <div ref={glowRef} className="cursor-glow hidden md:block"></div>
+
+      {/* ── Content ── */}
       <Navbar />
-      <main className="flex-grow max-w-7xl mx-auto w-full px-6">
+      <main className="relative z-10">
         {children}
       </main>
-      <footer className="py-12 px-6 border-t border-white/5 opacity-50 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono uppercase tracking-widest">
-        <span>&copy; 2024 LoopDev Hub // Balrampreet Singh</span>
-        <div className="flex gap-6">
-          <a href="#" className="hover:text-primary transition-colors">GitHub</a>
-          <a href="#" className="hover:text-primary transition-colors">LinkedIn</a>
-          <a href="#" className="hover:text-primary transition-colors">Status</a>
-        </div>
-      </footer>
     </div>
   );
 };
