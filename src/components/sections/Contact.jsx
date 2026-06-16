@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 const Contact = () => {
   const links = [
     { label: 'GitHub', href: 'https://github.com/Balram-1', icon: 'gh' },
-    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/balrampreet/', icon: 'li' },
-    { label: 'Email', href: 'mailto:balrampreet0@gmail.com', icon: 'em' },
+    { label: 'Email', href: 'mailto:balrampreet116699@gmail.com', icon: 'em' },
+    
   ];
 
   return (
